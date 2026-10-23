@@ -1,0 +1,73 @@
+{
+  "uid": "pkgwatch",
+  "title": "pkgwatch",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5s",
+  "time": { "from": "now-15m", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Readings processed per second",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        { "refId": "A", "expr": "rate(pkgwatch_readings_processed_total[1m])", "legendFormat": "processed" },
+        { "refId": "B", "expr": "rate(pkgwatch_readings_duplicates_total[1m])", "legendFormat": "duplicates" }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Incidents created by type",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        { "refId": "A", "expr": "sum by (type) (pkgwatch_incidents_created_total)", "legendFormat": "{{type}}" }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Dead letters published",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        { "refId": "A", "expr": "pkgwatch_dlq_published_total", "legendFormat": "dead letters" }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Consumer lag (max records)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        { "refId": "A", "expr": "max(kafka_consumer_fetch_manager_records_lag_max)", "legendFormat": "lag" }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Model latency (average seconds)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "targets": [
+        { "refId": "A", "expr": "rate(pkgwatch_llm_latency_seconds_sum[1m]) / rate(pkgwatch_llm_latency_seconds_count[1m])", "legendFormat": "average" }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Model fallbacks and webhook outcomes",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "targets": [
+        { "refId": "A", "expr": "pkgwatch_llm_fallbacks_total", "legendFormat": "template fallbacks" },
+        { "refId": "B", "expr": "pkgwatch_webhook_delivered_total", "legendFormat": "webhooks delivered" },
+        { "refId": "C", "expr": "pkgwatch_webhook_failed_total", "legendFormat": "webhooks failed" }
+      ]
+    }
+  ]
+}
