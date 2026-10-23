@@ -1,0 +1,65 @@
+spring:
+  application:
+    name: pkgwatch
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/pkgwatch}
+    username: ${DB_USER:pkgwatch}
+    password: ${DB_PASSWORD:pkgwatch}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092}
+    consumer:
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      acks: all
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        enable.idempotence: true
+
+pkgwatch:
+  topics:
+    downloads: package.downloads
+    partitions: 3
+  detection:
+    window-size: 40
+    min-samples: 10
+    spike-z-score: 4.0
+    drift-sigma: 2.5
+    max-gap-seconds: 172800
+    cooldown-readings: 14
+  llm:
+    api-key: ${GEMINI_API_KEY:}
+    model: gemini-2.5-flash
+    timeout-seconds: 10
+  webhook:
+    url: ${ALERT_WEBHOOK_URL:}
+    secret: ${ALERT_WEBHOOK_SECRET:}
+  producer:
+    enabled: ${REPLAY_ENABLED:false}
+    packages: lodash,express,react,axios
+    days: 365
+    interval-ms: 300
+    fault-injection: true
+    npm-base-url: https://api.npmjs.org
+  agent:
+    enabled: ${AGENT_ENABLED:false}
+    interval-ms: 300000
+    max-steps: 5
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: pkgwatch
