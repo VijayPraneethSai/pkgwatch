@@ -12,6 +12,7 @@ public record PkgwatchProperties(
         @DefaultValue Llm llm,
         @DefaultValue Webhook webhook,
         @DefaultValue Producer producer,
+        @DefaultValue Live live,
         @DefaultValue Agent agent) {
 
     public record Topics(
@@ -51,6 +52,18 @@ public record PkgwatchProperties(
             @DefaultValue("300") long intervalMs,
             @DefaultValue("true") boolean faultInjection,
             @DefaultValue("https://api.npmjs.org") String npmBaseUrl) {
+    }
+
+    public record Live(
+            @DefaultValue("false") boolean enabled,
+            @DefaultValue("") String packageJson,
+            @DefaultValue List<String> packages,
+            @DefaultValue("60") int backfillDays,
+            @DefaultValue("21600000") long intervalMs) {
+
+        public Live {
+            packages = packages == null ? List.of() : packages;
+        }
     }
 
     public record Agent(
