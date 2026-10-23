@@ -47,6 +47,12 @@ pkgwatch:
     interval-ms: 300
     fault-injection: true
     npm-base-url: https://api.npmjs.org
+  live:
+    enabled: ${LIVE_ENABLED:false}
+    package-json: ${WATCH_PACKAGE_JSON:}
+    packages: ${WATCH_PACKAGES:}
+    backfill-days: 60
+    interval-ms: 21600000
   agent:
     enabled: ${AGENT_ENABLED:false}
     interval-ms: 300000

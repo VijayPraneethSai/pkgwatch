@@ -10,7 +10,9 @@ import org.springframework.web.client.RestClientException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class NpmStatsClient {
@@ -40,5 +42,23 @@ public class NpmStatsClient {
             log.warn("could not fetch download stats for {}: {}", packageName, e.getClass().getSimpleName());
             return List.of();
         }
+    }
+
+    public Map<LocalDate, Double> dailyDownloadsByDate(String packageName, LocalDate start, LocalDate end) {
+        Map<LocalDate, Double> days = new LinkedHashMap<>();
+        try {
+            JsonNode response = http.get()
+                    .uri("/downloads/range/{start}:{end}/{pkg}", start.toString(), end.toString(), packageName)
+                    .retrieve()
+                    .body(JsonNode.class);
+            if (response != null) {
+                for (JsonNode day : response.path("downloads")) {
+                    days.put(LocalDate.parse(day.path("day").asText()), day.path("downloads").asDouble());
+                }
+            }
+        } catch (RestClientException | java.time.format.DateTimeParseException e) {
+            log.warn("could not fetch download stats for {}: {}", packageName, e.getClass().getSimpleName());
+        }
+        return days;
     }
 }
